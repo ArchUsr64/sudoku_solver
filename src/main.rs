@@ -1,4 +1,5 @@
-fn possible_results(position: (usize, usize), board: &[[Option<u8>; 9]]) -> Vec<u8> {
+type Board = [[Option<u8>; 9]; 9];
+fn possible_results(position: (usize, usize), board: &Board) -> Vec<u8> {
 	let mut result = Vec::new();
 	(1..=9).for_each(|test_value| {
 		let mut flag = true;
@@ -27,7 +28,7 @@ fn possible_results(position: (usize, usize), board: &[[Option<u8>; 9]]) -> Vec<
 	result
 }
 
-fn empty_cells(board: [[Option<u8>; 9]; 9]) -> Vec<(usize, usize)> {
+fn empty_cells(board: Board) -> Vec<(usize, usize)> {
 	(0..9)
 		.map(|i| (0..9).map(move |j| (i, j)))
 		.flatten()
@@ -35,16 +36,16 @@ fn empty_cells(board: [[Option<u8>; 9]; 9]) -> Vec<(usize, usize)> {
 		.collect()
 }
 
-fn solve(board: &mut [[Option<u8>; 9]; 9]) {
+fn solve(board: &mut Board) -> bool {
 	#[derive(Debug, Clone)]
 	struct Stage {
-		board: [[Option<u8>; 9]; 9],
+		board: Board,
 		solutions: Vec<u8>,
 		position: (usize, usize),
 	}
 	let position = empty_cells(*board);
 	if position.is_empty() {
-		return;
+		return true;
 	}
 	let position = *position.first().unwrap();
 	let mut backtrack = vec![Stage {
@@ -54,8 +55,7 @@ fn solve(board: &mut [[Option<u8>; 9]; 9]) {
 	}];
 	loop {
 		if backtrack.len() == 0 {
-			eprintln!("No solution found!");
-			break;
+			return false;
 		}
 		let current_stage = backtrack.last_mut().unwrap();
 		if current_stage.solutions.len() == 0 {
@@ -69,7 +69,7 @@ fn solve(board: &mut [[Option<u8>; 9]; 9]) {
 		let pos = empty_cells(try_board);
 		if pos.is_empty() {
 			*board = try_board;
-			return;
+			return true;
 		}
 		let new_position = *pos.first().unwrap();
 		backtrack.push(Stage {
@@ -80,7 +80,7 @@ fn solve(board: &mut [[Option<u8>; 9]; 9]) {
 	}
 }
 
-fn print(board: &[[Option<u8>; 9]]) {
+fn print(board: &Board) {
 	println!("┌─────────┐");
 	board.iter().for_each(|row| {
 		print!("│");
@@ -95,8 +95,15 @@ fn print(board: &[[Option<u8>; 9]]) {
 	});
 	println!("└─────────┘");
 }
-fn main() {
-	let mut board = [[Option::<u8>::None; 9]; 9];
+
+use std::{
+	io::{prelude::*, BufReader},
+	net::{TcpListener, TcpStream},
+};
+
+#[test]
+fn test() {
+	let mut board: Board = [[None; 9]; 9];
 	for _ in 0..25 {
 		let pos = || rand::random::<usize>() % 8;
 		let p = (pos(), pos());
@@ -106,4 +113,46 @@ fn main() {
 	print(&board);
 	solve(&mut board);
 	print(&board);
+}
+
+fn main() {
+	let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
+	for stream in listener.incoming() {
+		let mut stream = stream.unwrap();
+		let buf_reader = BufReader::new(&mut stream);
+		let mut input_board = handle_connection(buf_reader).unwrap();
+		print(&input_board);
+		let solved = solve(&mut input_board);
+		let mut output = String::with_capacity(82);
+		output.push(if solved { '1' } else { '0' });
+		input_board.iter().for_each(|row| {
+			row.iter()
+				.for_each(|cell| output.push_str(cell.unwrap_or(0).to_string().as_str()))
+		});
+		stream.write_all(output.as_bytes()).unwrap();
+	}
+}
+
+fn handle_connection(buf_reader: BufReader<&mut TcpStream>) -> Option<Board> {
+	let http_request: Vec<_> = buf_reader
+		.lines()
+		.map(|result| result.unwrap())
+		.take_while(|line| !line.is_empty())
+		.collect();
+	let mut board: Board = [[None; 9]; 9];
+	for (index, char) in http_request[0].char_indices() {
+		if index >= 81 {
+			break;
+		}
+		if !char.is_numeric() {
+			return None;
+		}
+		let cell_value = char.to_digit(10)? as u8;
+		board[index / 9][index % 9] = if cell_value == 0 {
+			None
+		} else {
+			Some(cell_value)
+		}
+	}
+	Some(board)
 }
