@@ -110,10 +110,20 @@ fn main() {
 	let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
 	for stream in listener.incoming() {
 		let mut stream = stream.unwrap();
+		println!("Connection Established with {stream:?}");
 		let buf_reader = BufReader::new(&mut stream);
 		let mut input_board = handle_connection(buf_reader).unwrap();
+		println!("Received board: ");
 		print(&input_board);
+		println!();
 		let solved = solve(&mut input_board);
+		if solved {
+			println!("Solved board: ");
+			print(&input_board);
+			println!();
+		} else {
+			println!("No solutions found")
+		}
 		let mut output = String::with_capacity(82);
 		output.push(if solved { '1' } else { '0' });
 		input_board.iter().for_each(|row| {
