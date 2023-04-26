@@ -101,20 +101,6 @@ use std::{
 	net::{TcpListener, TcpStream},
 };
 
-#[test]
-fn test() {
-	let mut board: Board = [[None; 9]; 9];
-	for _ in 0..25 {
-		let pos = || rand::random::<usize>() % 8;
-		let p = (pos(), pos());
-		let solutions = possible_results(p, &board);
-		board[p.0][p.1] = Some(solutions[rand::random::<usize>() % solutions.len()]);
-	}
-	print(&board);
-	solve(&mut board);
-	print(&board);
-}
-
 fn main() {
 	let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
 	for stream in listener.incoming() {
