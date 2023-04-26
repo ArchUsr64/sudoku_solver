@@ -37,6 +37,8 @@ fn empty_cells(board: Board) -> Vec<(usize, usize)> {
 }
 
 fn solve(board: &mut Board) -> bool {
+	use std::time::Instant;
+	let start = Instant::now();
 	#[derive(Debug, Clone)]
 	struct Stage {
 		board: Board,
@@ -54,6 +56,9 @@ fn solve(board: &mut Board) -> bool {
 		position,
 	}];
 	loop {
+		if start.elapsed().as_secs() > 1 {
+			return false;
+		}
 		if backtrack.len() == 0 {
 			return false;
 		}
