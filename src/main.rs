@@ -1,3 +1,5 @@
+use termion::color;
+
 type Board = [[Option<u8>; 9]; 9];
 fn possible_results(position: (usize, usize), board: &Board) -> Vec<u8> {
 	let mut result = Vec::new();
@@ -85,22 +87,25 @@ fn solve(board: &mut Board) -> bool {
 	}
 }
 
-fn print(board: &Board) {
+fn print(board: &Board, color_code: &str) {
 	println!("╔═══╤═══╤═══╗");
 	board.iter().enumerate().for_each(|(i, row)| {
-		if (i % 3 == 0 && i != 0) {
+		if i % 3 == 0 && i != 0 {
 			println!("╟───┼───┼───╢")
 		}
 		print!("║");
 		row.iter().enumerate().for_each(|(j, cell)| {
-			if (j % 3 == 0 && j != 0) {
+			if j % 3 == 0 && j != 0 {
 				print!("│");
 			}
+			print!("{color_code}");
 			if let Some(val) = *cell {
 				print!("{val}")
 			} else {
 				print!(" ")
 			}
+			print!("{}", color::Reset.fg_str());
+			print!("{}", color::Reset.bg_str());
 		});
 		println!("║");
 	});
@@ -120,12 +125,12 @@ fn main() {
 		let buf_reader = BufReader::new(&mut stream);
 		let mut input_board = handle_connection(buf_reader).unwrap();
 		println!("Received board: ");
-		print(&input_board);
+		print(&input_board, color::Blue.fg_str());
 		println!();
 		let solved = solve(&mut input_board);
 		if solved {
 			println!("Solved board: ");
-			print(&input_board);
+			print(&input_board, color::Green.fg_str());
 			println!();
 		} else {
 			println!("No solutions found")
