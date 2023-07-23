@@ -66,6 +66,8 @@ def solve():
     for sub_entries in entries:
         for entry in sub_entries:
             i += 1
+            if (entry.get() == " " or entry.get() == ""):
+                entry.configure(fg="#50a95d")
             entry.delete(0, END)
             entry.insert(0, output[i:i+1])
     print("\n")
