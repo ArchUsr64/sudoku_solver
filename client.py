@@ -48,11 +48,11 @@ def solve():
     data = serialise()
     for (i, val) in enumerate(data):
         previous_value[i] = val if val != "0" else " "
-    print("Sent data:", data)
+    print("Sent data:\t\t", data)
     s.send(data.encode())
     s.send(b"\n\n")
     output = s.recv(82).decode()
-    print("Output Received:", output)
+    print("Output Received:\t", output)
     s.close()
     if output[:1] != "1":
         print("Solution not found")
@@ -64,6 +64,7 @@ def solve():
             i += 1
             entry.delete(0, END)
             entry.insert(0, output[i:i+1])
+    print("\n")
 
 create_grid()    
 
