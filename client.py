@@ -17,7 +17,11 @@ def create_grid():
     for i in range(9):
         temp_list = []
         for j in range(9):
-            temp_list.append(Entry(main_window, width = 2,  font = font, justify = CENTER))
+            grid_test = lambda x, y: ((3 * (x // 3) + y) // 3 % 2 == 0)
+            if grid_test(i, j):
+                temp_list.append(Entry(main_window, width = 2,  font = font, justify = CENTER, bg= "#cdffee", fg="#3b7c65"))
+            else:
+                temp_list.append(Entry(main_window, width = 2,  font = font, justify = CENTER, bg= "#acfadf", fg="#285e4c"))
             temp_list[j].grid(row = i, column = j, padx = 2, pady = 2)
         entries.append(temp_list)
 
