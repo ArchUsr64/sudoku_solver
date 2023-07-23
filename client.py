@@ -22,6 +22,9 @@ def create_grid():
         entries.append(temp_list)
 
 def set_grid(value):
+    create_grid()
+    if value == None:
+        return
     i = 0
     for sub_entries in entries:
         for entry in sub_entries:
@@ -68,6 +71,6 @@ button_bg = "#a6d7cd"
 button_fg = "#084639"
 Button(main_window, text = "Solve", justify = CENTER, font = (font[0], 20), command = solve, width=5, bg=button_bg, fg=button_fg).grid(row = 0, column = 9)
 Button(main_window, text = "Reset", justify = CENTER, font = (font[0], 20), command = lambda:set_grid(previous_value), width=5, bg=button_bg, fg=button_fg).grid(row = 1, column = 9)
-Button(main_window, text = "Clear", justify = CENTER, font = (font[0], 20), command = lambda:set_grid([" "] * 81), width=5, bg=button_bg, fg=button_fg).grid(row = 2, column = 9)
+Button(main_window, text = "Clear", justify = CENTER, font = (font[0], 20), command = lambda:set_grid(None), width=5, bg=button_bg, fg=button_fg).grid(row = 2, column = 9)
 
 main_window.mainloop()
