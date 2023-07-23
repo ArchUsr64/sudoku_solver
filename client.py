@@ -48,7 +48,7 @@ def serialise():
 def solve():
     global previous_value
     s = socket()
-    s.connect(("localhost", 1234))
+    s.connect(("localhost", 6528))
     data = serialise()
     for (i, val) in enumerate(data):
         previous_value[i] = val if val != "0" else " "
@@ -70,7 +70,7 @@ def solve():
                 entry.configure(fg="#50a95d")
             entry.delete(0, END)
             entry.insert(0, output[i:i+1])
-    print("\n")
+    print()
 
 create_grid()    
 

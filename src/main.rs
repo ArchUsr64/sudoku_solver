@@ -1,6 +1,6 @@
 use termion::color;
 
-const LISTENER_IP: &'static str = "127.0.0.1:1234";
+const LISTENER_IP: &'static str = "127.0.0.1:6528";
 
 type Board = [[Option<u8>; 9]; 9];
 fn possible_results(position: (usize, usize), board: &Board) -> Vec<u8> {
