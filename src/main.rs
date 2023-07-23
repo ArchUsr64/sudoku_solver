@@ -86,19 +86,25 @@ fn solve(board: &mut Board) -> bool {
 }
 
 fn print(board: &Board) {
-	println!("┌─────────┐");
-	board.iter().for_each(|row| {
-		print!("│");
-		row.iter().for_each(|cell| {
+	println!("╔═══╤═══╤═══╗");
+	board.iter().enumerate().for_each(|(i, row)| {
+		if (i % 3 == 0 && i != 0) {
+			println!("╟───┼───┼───╢")
+		}
+		print!("║");
+		row.iter().enumerate().for_each(|(j, cell)| {
+			if (j % 3 == 0 && j != 0) {
+				print!("│");
+			}
 			if let Some(val) = *cell {
 				print!("{val}")
 			} else {
-				print!("-")
+				print!(" ")
 			}
 		});
-		println!("│");
+		println!("║");
 	});
-	println!("└─────────┘");
+	println!("╚═══╧═══╧═══╝");
 }
 
 use std::{
