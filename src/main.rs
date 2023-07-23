@@ -1,5 +1,7 @@
 use termion::color;
 
+const LISTENER_IP: &'static str = "127.0.0.1:1234";
+
 type Board = [[Option<u8>; 9]; 9];
 fn possible_results(position: (usize, usize), board: &Board) -> Vec<u8> {
 	let mut result = Vec::new();
@@ -118,22 +120,44 @@ use std::{
 };
 
 fn main() {
-	let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
+	let listener = TcpListener::bind(LISTENER_IP).unwrap();
+	println!(
+		"{}[INFO]{} Listening for TCP connections on {}",
+		color::LightGreen.bg_str(),
+		color::Reset.bg_str(),
+		LISTENER_IP
+	);
 	for stream in listener.incoming() {
 		let mut stream = stream.unwrap();
-		println!("Connection Established with {stream:?}");
+		println!(
+			"{}[INFO]{} Connection Established with {stream:?}",
+			color::LightGreen.bg_str(),
+			color::Reset.bg_str()
+		);
 		let buf_reader = BufReader::new(&mut stream);
 		let mut input_board = handle_connection(buf_reader).unwrap();
-		println!("Received board: ");
+		println!(
+			"{}[DOWNSTREAM]{} Received board state:",
+			color::LightBlue.bg_str(),
+			color::Reset.bg_str()
+		);
 		print(&input_board, color::Blue.fg_str());
 		println!();
 		let solved = solve(&mut input_board);
 		if solved {
-			println!("Solved board: ");
+			println!(
+				"{}[UPSTREAM]{} Solved board state sent:",
+				color::LightGreen.bg_str(),
+				color::Reset.bg_str(),
+			);
 			print(&input_board, color::Green.fg_str());
 			println!();
 		} else {
-			println!("No solutions found")
+			println!(
+				"{}[ERROR]{} No solutions found",
+				color::LightRed.bg_str(),
+				color::Reset.bg_str(),
+			)
 		}
 		let mut output = String::with_capacity(82);
 		output.push(if solved { '1' } else { '0' });
