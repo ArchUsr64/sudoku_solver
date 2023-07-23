@@ -2,8 +2,11 @@ from socket import socket
 from tkinter import Tk, Entry, Button, CENTER, messagebox, END
 
 main_window = Tk()
-main_window.geometry("601x472")
-main_window.title("Sudoku")
+main_window.configure(bg="#E8FFCE")
+main_window.attributes("-type", "dialog")
+main_window.geometry("575x440")
+main_window.title("Sudoku Client")
+
 entries = []
 previous_value = [" "] * 81
 font = ("FiraCode, 25")
